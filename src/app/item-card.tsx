@@ -1,6 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { Item } from "@/db/schema";
+import { formatToDollar } from "@/util/currency";
 import { getImageUrl } from "@/util/files";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export const ItemCard = ({ item }: { item: Item }) => {
@@ -13,7 +16,16 @@ export const ItemCard = ({ item }: { item: Item }) => {
         height={200}
       />
       <h2 className="text-xl font-bold">{item.name}</h2>
-      <p className="text-lg">starting price: ${item.startingPrice / 100}</p>
+      <p className="text-lg">
+        starting price: ${formatToDollar(item.startingPrice)}
+      </p>
+      {/* <Button asChild variant={isBidOver(item) ? "outline" : "default"}> */}
+      <Button asChild>
+        <Link href={`/items/${item.id}`}>
+          {/* {isBidOver(item) ? "View Bid" : "Place Bid"} */}
+          Bid
+        </Link>
+      </Button>
     </div>
   );
 };
