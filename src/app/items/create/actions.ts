@@ -4,8 +4,23 @@ import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getSignedUrlForS3Object } from "@/lib/s3";
 
-export const createItemAction = async (formData: FormData) => {
+export async function createUploadUrlAction(key: string, type: string) {
+  return await getSignedUrlForS3Object(key, type);
+}
+
+export async function createItemAction({
+  fileName,
+  name,
+  startingPrice,
+}: // endDate,
+{
+  fileName: string;
+  name: string;
+  startingPrice: number;
+  // endDate: Date;
+}) {
   const session = await auth();
 
   if (!session) {
@@ -18,14 +33,14 @@ export const createItemAction = async (formData: FormData) => {
     throw new Error("Unauthorized");
   }
 
-  const startingPrice = formData.get("startingPrice") as string;
-
-  const priceAsCents = Math.floor(parseFloat(startingPrice) * 100);
-
   await database.insert(items).values({
-    name: formData.get("name") as string,
-    startingPrice: priceAsCents,
+    name,
+    startingPrice,
+    fileKey: fileName,
+    // currentBid: startingPrice,
     userId: user.id,
+    // endDate,
   });
+
   redirect("/");
-};
+}
