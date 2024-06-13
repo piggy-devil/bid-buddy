@@ -14,12 +14,12 @@ export async function createItemAction({
   fileName,
   name,
   startingPrice,
-}: // endDate,
-{
+  endDate,
+}: {
   fileName: string;
   name: string;
   startingPrice: number;
-  // endDate: Date;
+  endDate: Date;
 }) {
   const session = await auth();
 
@@ -37,9 +37,9 @@ export async function createItemAction({
     name,
     startingPrice,
     fileKey: fileName,
-    // currentBid: startingPrice,
+    currentBid: startingPrice,
     userId: user.id,
-    // endDate,
+    endDate,
   });
 
   redirect("/");

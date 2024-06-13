@@ -1,14 +1,20 @@
-import Image from "next/image";
-import Link from "next/link";
+import { createBidAction } from "@/app/items/[itemId]/actions";
+import { auth } from "@/auth";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getBidsForItem } from "@/data-access/bids";
 import { getItem } from "@/data-access/items";
+import { isBidOver } from "@/util/bids";
 import { formatToDollar } from "@/util/currency";
 import { getImageUrl } from "@/util/files";
 import { pageTitleStyles } from "@/util/styles";
-import { formatTimestamp } from "@/util/tools";
-import { createBidAction } from "./actions";
-import { auth } from "@/auth";
+import { formatDistance } from "date-fns";
+import Image from "next/image";
+import Link from "next/link";
+
+function formatTimestamp(timestamp: Date) {
+  return formatDistance(timestamp, new Date(), { addSuffix: true });
+}
 
 export default async function ItemPage({
   params: { itemId },
@@ -42,7 +48,8 @@ export default async function ItemPage({
 
   const hasBids = allBids.length > 0;
 
-  const canPlaceBid = session && item.userId !== session.user.id;
+  const canPlaceBid =
+    session && item.userId !== session.user.id && !isBidOver(item);
 
   return (
     <main className="space-y-8">
@@ -51,6 +58,12 @@ export default async function ItemPage({
           <h1 className={pageTitleStyles}>
             <span className="font-normal">Auction for</span> {item.name}
           </h1>
+          {isBidOver(item) && (
+            <Badge className="w-fit" variant="destructive">
+              Bidding Over
+            </Badge>
+          )}
+
           <Image
             className="rounded-xl"
             src={getImageUrl(item.fileKey)}
