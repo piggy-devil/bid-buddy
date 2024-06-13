@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Header } from "./header";
+import { SessionProvider } from "next-auth/react";
+import { AppKnockProviders } from "./knock-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -27,8 +29,12 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Header />
-        <div className="container mx-auto py-12">{children}</div>
+        <SessionProvider>
+          <AppKnockProviders>
+            <Header />
+            <div className="container mx-auto py-12">{children}</div>
+          </AppKnockProviders>
+        </SessionProvider>
       </body>
     </html>
   );
